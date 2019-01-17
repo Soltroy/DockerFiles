@@ -81,6 +81,7 @@ RUN chown -R psDev:psDev $CONFIGDESTINATION
 # copy start script
 COPY start.sh /usr/local/bin/start.sh
 
+# set workdir
 WORKDIR $DEVDIR
 
 CMD [ "start.sh" ]
