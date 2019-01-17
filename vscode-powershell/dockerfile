@@ -1,0 +1,86 @@
+# Visual Studio Code in a container
+
+#FROM microsoft/powershell
+FROM mcr.microsoft.com/powershell
+
+# container metadata
+LABEL maintainer="SOLTroy"
+LABEL org.label-schema.schema-version = "1.0"
+LABEL org.label-schema.name = "VS Code Powershell Development Environment"
+LABEL org.label-schema.version = "1.0.0-alpha.1"
+LABEL org.label-schema.description = "Linux Powershell Development Environment. Based on latest microsoft/powershell and adds VS Code with Extensions (monokai.theme-monokai-pro-vscode, ms-vscode.powershell, streetsidesoftware.code-spell-checker), preconfigured settings.json and Hack Font"
+
+# tell debconf to run in non-interactive mode
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get install -y \
+	apt-transport-https \
+	ca-certificates \
+	curl \
+	gnupg \
+	git \
+	fonts-hack-ttf \
+	--no-install-recommends
+
+# add the vscode debian repository
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | apt-key add -
+RUN echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list
+
+# install packages
+RUN apt-get update && apt-get -y install \
+	code \
+	libasound2 \
+	libatk1.0-0 \
+	libcairo2 \
+	libcups2 \
+	libexpat1 \
+	libfontconfig1 \
+	libfreetype6 \
+	libgtk2.0-0 \
+	libpango-1.0-0 \
+	libx11-xcb1 \
+	libxcomposite1 \
+	libxcursor1 \
+	libxdamage1 \
+	libxext6 \
+	libxfixes3 \
+	libxi6 \
+	libxrandr2 \
+	libxrender1 \
+	libxss1 \
+	libxtst6 \
+	openssh-client \
+	--no-install-recommends \
+	&& rm -rf /var/lib/apt/lists/*
+
+# init User
+ENV HOME /home/psDev
+RUN useradd --create-home --home-dir $HOME psDev \
+	&& chown -R psDev:psDev $HOME
+
+# init dev directory
+ENV DEVDIR /devData
+RUN mkdir $DEVDIR \
+	&& chown -R psDev:psDev $DEVDIR
+
+# init VSCode extension directory
+ENV VSCODEEXT /var/vscode-ext
+RUN mkdir $VSCODEEXT \
+	&& chown -R psDev:psDev $VSCODEEXT
+
+# install VSCode extensions
+RUN su psDev -c "code --extensions-dir $VSCODEEXT --install-extension monokai.theme-monokai-pro-vscode --install-extension ms-vscode.powershell --install-extension streetsidesoftware.code-spell-checker"
+
+# copy settings.json - the setting XXX is mandatory if used with X-Server and windows, otherwise window can't be resized/moved/...
+ENV CONFIGDESTINATION $HOME/.config/Code/User/settings.json
+COPY settings.json $CONFIGDESTINATION
+
+# take ownership of config file
+RUN chown -R psDev:psDev $CONFIGDESTINATION
+
+# copy start script
+COPY start.sh /usr/local/bin/start.sh
+
+WORKDIR $DEVDIR
+
+CMD [ "start.sh" ]
