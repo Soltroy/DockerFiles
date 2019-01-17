@@ -23,7 +23,7 @@ At this time I just tried MobaXterm - although it's running, performance isn't t
 3. run container
 
 ````powershell
-docker run --rm -e DISPLAY:<MobaXtermIP>
+docker run --rm -e DISPLAY:<MobaXtermIP> -v "$(Get-Location):/devData"
 ````
 
 ## Version History

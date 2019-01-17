@@ -1,6 +1,3 @@
-# Visual Studio Code in a container
-
-#FROM microsoft/powershell
 FROM mcr.microsoft.com/powershell
 
 # container metadata
@@ -9,10 +6,13 @@ LABEL org.label-schema.schema-version = "1.0"
 LABEL org.label-schema.name = "VS Code Powershell Development Environment"
 LABEL org.label-schema.version = "1.0.0-alpha.1"
 LABEL org.label-schema.description = "Linux Powershell Development Environment. Based on latest microsoft/powershell and adds VS Code with Extensions (monokai.theme-monokai-pro-vscode, ms-vscode.powershell, streetsidesoftware.code-spell-checker), preconfigured settings.json and Hack Font"
+LABEL org.label-schema.vcs-url = "https://github.com/Soltroy/DockerFiles/"
+LABEL org.label-schema.url = "https://github.com/Soltroy/DockerFiles/"
 
 # tell debconf to run in non-interactive mode
 ENV DEBIAN_FRONTEND noninteractive
 
+# install base packages
 RUN apt-get update && apt-get install -y \
 	apt-transport-https \
 	ca-certificates \
