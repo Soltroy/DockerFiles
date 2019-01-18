@@ -18,12 +18,12 @@ Additions to the Powershell Container:
 
 At this time I just tried MobaXterm - although it's running, performance isn't that good. I'm going to figure out which alternative X-servers can be used and how to configure them, until then I'll use MobaXterm in this HowTo.
 
-1. donload and start [MobaXterm](https://mobaxterm.mobatek.net/) (you can use portable version without any issues)
+1. download and start [MobaXterm](https://mobaxterm.mobatek.net/) (you can use portable version without any issues)
 2. get MobaXterm IP Address
 3. run container
 
 ````powershell
-docker run --rm -e DISPLAY:<MobaXtermIP> -v "$(Get-Location):/devData" soltroy/vscode-powershell
+docker run --rm -e DISPLAY=<MobaXtermIP> -v "$(Get-Location):/devData" soltroy/vscode-powershell
 ````
 
 ## Version History
